@@ -7,7 +7,7 @@ Media página, como pide el brief. La vista completa del proyecto (qué es, cóm
 - **Inventar un match es peor que no tener match.** Umbral de rechazo en 0.45; candidatos ambiguos (top-2 dentro de 0.10, top<0.9) se descartan en vez de adivinar. Resultado: 60% matched (HIGH+MEDIUM), 35% ambiguo, 5% rechazado — el 35% ambiguo no es ruido de datos sucios, es colisión real de nombres (varios "Diana Castro" en 6.000 personas) sin email/teléfono que desempate.
 - El "80/20" es sobre el **cohorte identificado**, no sobre todos los compradores: Boom no tiene ningún campo de dinero, así que el ingreso solo se puede calcular con `sales.subtotal` de las ventas que sí matchearon. Con eso, el top 20% (544 de 2.719 invitados identificados) concentra **59.3%** del ingreso matcheado — fuerte, pero menos que el 80/20 clásico; lo digo así en vez de forzar el número.
 - La regla "máximo 2 tickets por evento" está marcada como "v2" en el brief — la trato como advertencia (785 casos detectados), no como filtro, porque descartarla hubiera tirado matches válidos de compras grupales legítimas (`sales.qty` > 1).
-- Puntos = el campo `boom.points` que ya existe, no una moneda nueva. La redención vía "Puntos Colombia" es un concepto de producto, no una integración real (no hay API pública para eso en 4 horas).
+- Puntos = el campo `boom.points` que ya existe, no una moneda nueva. La redención vía "Puntos Colombia" es un concepto de producto, no una integración real (no hay API pública para eso en 4 horas); el mock usa sus categorías reales (retail ~60%, movilidad ~20%, viajes ~10%, marketplace ~10% de las redenciones, Colombia, reportes 2024–2026).
 
 ## Qué señal pesó más
 
