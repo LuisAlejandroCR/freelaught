@@ -80,7 +80,7 @@ thead th[data-sort] { cursor: pointer; }
 thead th[data-sort]:hover { color: var(--text); }
 thead th.sort-asc::after { content: " ↑"; color: var(--primary); }
 thead th.sort-desc::after { content: " ↓"; color: var(--primary); }
-tbody tr { border-bottom: 1px solid rgba(38, 39, 43, 0.55); transition: background 0.15s; }
+tbody tr { border-bottom: 1px solid rgba(38, 39, 43, 0.55); transition: background 0.15s; cursor: pointer; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
 tbody td { padding: 13px 16px; vertical-align: middle; }

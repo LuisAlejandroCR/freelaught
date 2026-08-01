@@ -1,9 +1,9 @@
 {
-  "name": "freeticket-hackathon",
+  "name": "freelaught-hackathon",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "FreeTicket hackathon — Boom/FreeTicket matching, August attendance forecast, and a VIP/loyalty product layer",
+  "description": "Freelaught — Boom/FreeTicket matching, August attendance forecast, and a VIP/loyalty product layer",
   "scripts": {
     "run-all": "node src/pipeline/run-all.js",
     "fetch": "node src/pipeline/01-fetch.js",

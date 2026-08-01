@@ -1,4 +1,4 @@
-# NOTAS — FreeTicket Hackathon
+# NOTAS — Freelaught
 
 Media página, como pide el brief. La vista completa del proyecto (qué es, cómo correrlo, números) está en [README.md](README.md); esto es solo lo que el brief pide puntualmente.
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FreeTicket — Shows de agosto</title>
+<title>Freelaught — Shows de agosto</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
@@ -11,7 +11,7 @@
 <body>
 <header>
   <div class="container nav">
-    <a class="brand" href="/"><span class="brand-dot"></span>FreeTicket</a>
+    <a class="brand" href="/"><span class="brand-dot"></span>Freelaught</a>
     <div class="nav-links">
       <a href="/" class="active">Shows</a>
       <a href="/vip">VIP</a>
@@ -31,7 +31,7 @@
 </main>
 
 <footer>
-  <div class="container">FreeTicket × Boom — hackathon. Forecast y Pareto generados por el pipeline local.</div>
+  <div class="container">Freelaught — hackathon Boom × FreeTicket. Forecast y Pareto generados por el pipeline local.</div>
 </footer>
 
 <script src="/app.js"></script>
@@ -76,8 +76,15 @@ async function load() {
     $("#table-area").replaceWith(table);
 
     const tbody = table.querySelector("tbody");
+    tbody.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr");
+      if (!tr) return;
+      if (e.target.closest("a")) return;
+      location.href = `/events/${tr.dataset.id}`;
+    });
     for (const e of events) {
       const tr = document.createElement("tr");
+      tr.dataset.id = e.event_id;
       const fillPct = e.fill_rate_expected !== null ? e.fill_rate_expected * 100 : null;
       const residency = e.is_residency ? '<span class="badge teal" style="margin-left:6px">residencia</span>' : "";
       tr.dataset.title = e.title.toLowerCase();

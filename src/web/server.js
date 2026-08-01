@@ -115,6 +115,7 @@ const server = createServer((req, res) => {
     }
 
     if (path === "/" || path === "/index.html") return sendFile(res, join(PUBLIC_DIR, "index.html"));
+    if (path === "/pitch") return sendFile(res, join(PUBLIC_DIR, "pitch.html"));
     if (path.startsWith("/events/")) return sendFile(res, join(PUBLIC_DIR, "event.html"));
     if (path === "/vip") return sendFile(res, join(PUBLIC_DIR, "vip.html"));
     return sendFile(res, join(PUBLIC_DIR, path.slice(1)));
@@ -125,7 +126,7 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`FreeTicket product layer running at http://localhost:${PORT}`);
+  console.log(`Freelaught product layer running at http://localhost:${PORT}`);
   console.log(`  /       — 30 shows de agosto, asistencia esperada + rango + staffing`);
   console.log(`  /events/:id — detalle por show, invitados VIP, link efímero`);
   console.log(`  /vip    — Pareto de invitados identificados + puntos`);
