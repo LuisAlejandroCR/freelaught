@@ -74,6 +74,7 @@ function fmtLeft(ms) {
   return `${h}h ${String(m).padStart(2, "0")}m`;
 }
 
-function waShareUrl(text) {
-  return `https://wa.me/?text=${encodeURIComponent(text)}`;
+function waShareUrl(text, pageUrl) {
+  const msg = pageUrl ? `${text}\n${pageUrl}` : text;
+  return `https://wa.me/?text=${encodeURIComponent(msg)}`;
 }

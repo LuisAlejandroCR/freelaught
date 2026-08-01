@@ -59,6 +59,7 @@ function eventSummary(event, data) {
     p90: f?.p90 ?? null,
     fill_rate_expected: event.capacity ? Math.min(1, expected / event.capacity) : null,
     suggested_staff: suggestedStaff,
+    vip_guest_count: (data.derived.vipByEvent[event.event_id] ?? []).length,
   };
 }
 

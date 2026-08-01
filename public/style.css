@@ -122,6 +122,18 @@ td.title-cell span { font-size: 12.5px; color: var(--muted); }
 .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
 .btn:disabled { opacity: 0.5; cursor: default; }
 
+.wa-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
+  background: #25d366; color: #fff;
+  transition: transform 0.1s, filter 0.15s;
+}
+.wa-btn:hover { filter: brightness(1.06); }
+.wa-btn:active { transform: scale(0.96); }
+.wa-btn:disabled { opacity: 0.5; cursor: default; }
+.wa-btn svg { width: 24px; height: 24px; }
+.share-caption { font-size: 13px; font-weight: 600; margin-top: 8px; }
+
 /* ── Event detail ── */
 .hero { display: flex; flex-wrap: wrap; gap: 26px; justify-content: space-between; align-items: flex-end; margin-top: 6px; }
 .hero-badges { margin-top: 12px; display: flex; gap: 7px; flex-wrap: wrap; }
@@ -187,16 +199,50 @@ td.title-cell span { font-size: 12.5px; color: var(--muted); }
 .seg-legend-item b { font-weight: 800; }
 .seg-legend-item .pct { color: var(--muted); font-size: 12px; }
 
-/* ── Recomendación: foco por día (top 3 shows por asistencia esperada) ── */
-.focus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.focus-day { background: var(--card-2); border: 1px solid var(--border); border-radius: 11px; padding: 13px 14px; }
-.focus-day-lab { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 9px; }
-.focus-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(224, 224, 224, 0.6); font-size: 13px; }
-.focus-row:last-child { border-bottom: none; }
-.focus-row:hover .focus-title { text-decoration: underline; }
-.focus-rank { width: 19px; height: 19px; border-radius: 6px; background: var(--primary-dim); color: #5b4a00; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.focus-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
-.focus-num { color: var(--text); font-weight: 700; font-size: 12.5px; flex-shrink: 0; }
+/* ── Recomendación: foco por día ──
+   Lead banner = the single answer (biggest KPI first, per UX review).
+   Compact list below = one row per day (top show), #2/#3 behind an expand
+   toggle (progressive disclosure) instead of always rendering 15 rows.
+   Bars are scaled to the GLOBAL max across all shows, not per-day — a
+   per-day max made a 123 and a 376 render as visually identical 100% bars. */
+.focus-lead {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 16px 18px; margin-bottom: 14px;
+  background: var(--primary-dim); border: 1px solid rgba(255, 209, 2, 0.5); border-radius: 12px;
+}
+.focus-lead .n { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; color: var(--text); flex-shrink: 0; }
+.focus-lead .n.purple { color: var(--purple); }
+.focus-lead-body { min-width: 0; }
+.focus-lead-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #5b4a00; margin-bottom: 3px; }
+.focus-lead-title { font-weight: 700; font-size: 15.5px; }
+.focus-lead-why { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+
+.focus-list { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.focus-item { border-bottom: 1px solid var(--border); }
+.focus-item:last-child { border-bottom: none; }
+.focus-item-main { display: flex; align-items: center; gap: 12px; padding: 11px 14px; }
+.focus-day-tag { width: 76px; flex-shrink: 0; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.focus-item-body { flex: 1; min-width: 0; display: block; }
+.focus-item-body:hover .focus-item-title { text-decoration: underline; }
+.focus-item-title { display: block; font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.focus-item-bar { margin-top: 6px; width: 100%; max-width: none; height: 5px; }
+.focus-item-value { text-align: right; flex-shrink: 0; }
+.focus-item-value .n { font-weight: 700; font-size: 13.5px; }
+.focus-item-value .unit { font-weight: 600; font-size: 11px; color: var(--muted); }
+.focus-item-value .delta { font-size: 11px; margin-top: 2px; }
+.focus-item-value .delta.up { color: #0d6e67; }
+.focus-item-value .delta.down { color: var(--muted); }
+.focus-expand-btn {
+  flex-shrink: 0; background: var(--card-2); border: 1px solid var(--border); border-radius: 999px;
+  cursor: pointer; color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 10px; font-family: inherit;
+}
+.focus-expand-btn:hover { color: var(--text); border-color: var(--muted); }
+.focus-expand-spacer { width: 68px; flex-shrink: 0; }
+/* [hidden] must win over the `display: flex` below — author rules override
+   the UA [hidden]{display:none} default at equal specificity, so without
+   this the #2/#3 rows would render even while `hidden` is set by JS. */
+.focus-sub { display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 90px; border-top: 1px dashed var(--border); }
+.focus-sub[hidden] { display: none; }
 
 /* ── Filter tabs (Top VIP, shows weekday/residency) ── */
 .filter-tabs { display: flex; gap: 4px; background: var(--card-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; flex-wrap: wrap; }
@@ -217,7 +263,6 @@ td.title-cell span { font-size: 12.5px; color: var(--muted); }
 .search-input:focus { outline: none; border-color: var(--primary); }
 
 /* ── Share panel ── */
-.share-box { margin-top: 26px; }
 .share-meta { font-size: 13px; color: var(--muted); margin-top: 10px; }
 .share-meta .expired { color: var(--red); font-weight: 700; }
 
