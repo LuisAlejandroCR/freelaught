@@ -43,10 +43,10 @@
       <div id="vip-list"><div class="skeleton">Cargando…</div></div>
     </div>
     <div class="card">
-      <div class="section-title" style="margin-top:0">Puntos de invitados</div>
-      <div class="mock-flag">concepto — sin integración real con Puntos Colombia</div>
+      <div class="section-title" style="margin-top:0">Puntos de invitados — dónde se redimen hoy</div>
+      <div class="mock-flag">datos reales de mercado · sin integración con la API de Puntos Colombia (no es pública)</div>
       <div class="partner-grid" id="partners"><div class="skeleton">Cargando…</div></div>
-      <div class="panel-note">Los puntos de cada invitado son reales (campo de Boom). El canje por marcas es ilustrativo: no existe API de Puntos Colombia para integrar en 4 horas.</div>
+      <div class="panel-note">Los puntos de cada invitado son reales (campo de Boom). Las categorías y participación son datos reales de Puntos Colombia a nivel país (Valora Analitik, reportes oficiales 2025–2026) — no simulados. Gastronomía es la única donde el venue compite directo con su propia oferta.</div>
     </div>
   </div>
 </main>
@@ -158,14 +158,14 @@ async function load() {
     renderFilterTabs();
     renderVipList();
 
-    $("#partners").innerHTML = v.mockRedemptionPartners
+    $("#partners").innerHTML = v.puntosColombiaCategories
       .map(
-        (p) => `
-      <div class="partner">
-        <div class="brand">${p.brand}</div>
-        <div class="cost mono">${fmtInt(p.cost_points)} pts</div>
-        <div class="reward">${p.reward}</div>
-        <button class="btn ghost cta" disabled>Canjear (mock)</button>
+        (c) => `
+      <div class="partner${c.venueRelevant ? " relevant" : ""}">
+        <div class="brand">${c.category}${c.venueRelevant ? ' <span class="badge teal" style="margin-left:5px">el venue compite acá</span>' : ""}</div>
+        <div class="cost mono">${c.sharePct}<span style="font-size:14px">%</span></div>
+        <div class="reward">${c.partner}</div>
+        <div class="reward" style="margin-top:2px">${c.note}</div>
       </div>`
       )
       .join("");

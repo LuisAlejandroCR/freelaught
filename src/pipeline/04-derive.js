@@ -12,13 +12,22 @@ const PARETO_SHARE = 0.2;
 const MIN_EVENTS_FOR_AFFINITY = 2;
 const AFFINITY_THRESHOLD = 0.5;
 
-// Illustrative only — there is no real Puntos Colombia API to integrate
-// against in a 4-hour hackathon. Clearly labeled as a mock everywhere it's
-// surfaced (see NOTAS.md "qué haría con 4 horas más").
-const MOCK_REDEMPTION_PARTNERS = [
-  { brand: "Café de la Esquina", cost_points: 150, reward: "Bebida gratis" },
-  { brand: "Cine Nacional", cost_points: 800, reward: "Entrada 2x1" },
-  { brand: "Transporte App", cost_points: 500, reward: "$10.000 en viajes" },
+// Real Puntos Colombia national redemption categories — not invented.
+// Sources: Valora Analitik (entrevista CPO Steven Páez) + reportes oficiales
+// Puntos Colombia 2025-2026, El Colombiano 2024. Documentado con detalle en
+// docs/plan.md ("Redención — contexto real"). Shares no suman 100%: sales
+// de metodologías de medición distintas, no una sola torta — se muestran tal
+// como se reportaron, sin normalizar.
+// Lo que SÍ es mock: no hay integración con la API de Puntos Colombia (no es
+// pública) — esto es contexto de mercado real, no una función de canje real.
+const PUNTOS_COLOMBIA_CATEGORIES = [
+  { category: "Retail / Mercado", partner: "Grupo Éxito", sharePct: 60, note: "La categoría más redimida a nivel país", venueRelevant: false },
+  { category: "Movilidad", partner: "Gasolina, peajes, SOAT", sharePct: 20, note: ">40% de usuarios redimieron · +21% vs año anterior", venueRelevant: false },
+  { category: "Viajes", partner: "85% vuelos", sharePct: 10, note: "Top: Medellín, Bogotá, Cartagena, Barranquilla", venueRelevant: false },
+  { category: "Marketplace", partner: "Tienda Online", sharePct: 10, note: "Canje directo por productos", venueRelevant: false },
+  { category: "Gastronomía", partner: "Preferencia declarada", sharePct: 7.5, note: "7–8% — la categoría donde el venue compite directo", venueRelevant: true },
+  { category: "Moda", partner: "Preferencia declarada", sharePct: 7.5, note: "7–8%", venueRelevant: false },
+  { category: "Bienestar", partner: "Preferencia declarada", sharePct: 7.5, note: "7–8%", venueRelevant: false },
 ];
 
 function computeWeekdayAffinity(weekdayCounts, totalEvents) {
@@ -106,7 +115,7 @@ export function deriveProductLayer({ boomProfiles, events, sales, tickets, match
     guests,
     vipGuests,
     vipByEvent: Object.fromEntries(vipByEvent),
-    mockRedemptionPartners: MOCK_REDEMPTION_PARTNERS,
+    puntosColombiaCategories: PUNTOS_COLOMBIA_CATEGORIES,
   };
 }
 

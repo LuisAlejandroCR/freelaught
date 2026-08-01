@@ -259,7 +259,7 @@ test("deriveProductLayer: VIP is top-20% by revenue, sorted, affinity computed",
   assert.equal(u3.weekday_affinity, "viernes");
   // VIP per event
   assert.deepEqual(d.vipByEvent["e1"].map((v) => v.boom_user_id), ["u1"]);
-  assert.equal(d.mockRedemptionPartners.length, 3);
+  assert.equal(d.puntosColombiaCategories.length, 7);
 });
 
 test("csv: writeCsv/readCsv round-trip with quoting and escapes", () => {

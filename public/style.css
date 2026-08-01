@@ -150,11 +150,11 @@ td.title-cell span { font-size: 12.5px; color: var(--muted); }
 .mock-flag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--orange); border: 1px solid rgba(255, 77, 46, 0.4); background: rgba(255, 77, 46, 0.08); padding: 3px 10px; border-radius: 999px; font-weight: 600; }
 .partner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
 .partner { background: var(--card-2); border: 1px solid var(--border); border-radius: 11px; padding: 15px 16px; }
-.partner .brand { font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px; }
-.partner .brand::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+.partner.relevant { border-color: rgba(30, 187, 178, 0.5); background: var(--teal-dim); }
+.partner .brand { font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.partner .brand::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
 .partner .cost { font-size: 22px; font-weight: 800; margin-top: 10px; color: var(--teal); }
 .partner .reward { font-size: 13px; color: var(--muted); margin-top: 3px; }
-.partner .cta { margin-top: 11px; }
 
 /* ── SVG curve ──
    Axis labels are HTML, not SVG <text> — the chart's viewBox is deliberately
@@ -187,14 +187,23 @@ td.title-cell span { font-size: 12.5px; color: var(--muted); }
 .seg-legend-item b { font-weight: 800; }
 .seg-legend-item .pct { color: var(--muted); font-size: 12px; }
 
-/* ── Filter tabs (Top VIP) ── */
-.filter-tabs { display: flex; gap: 4px; background: var(--card-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; }
+/* ── Filter tabs (Top VIP, shows weekday/residency) ── */
+.filter-tabs { display: flex; gap: 4px; background: var(--card-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; flex-wrap: wrap; }
 .filter-tabs button {
   border: none; background: transparent; cursor: pointer; font-family: inherit;
   font-size: 12.5px; font-weight: 600; color: var(--muted); padding: 6px 12px; border-radius: 7px;
 }
 .filter-tabs button:hover { color: var(--text); }
 .filter-tabs button.active { background: var(--primary); color: #070707; }
+
+/* ── Shows filters row (search + weekday + residency) ── */
+.filters-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.search-input {
+  flex: 1; min-width: 200px; background: var(--card-2); border: 1px solid var(--border); border-radius: 9px;
+  padding: 8px 13px; font-family: inherit; font-size: 13.5px; color: var(--text);
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { outline: none; border-color: var(--primary); }
 
 /* ── Share panel ── */
 .share-box { margin-top: 26px; }

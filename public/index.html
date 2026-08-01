@@ -33,6 +33,19 @@
     <div class="seg-legend" id="match-legend"></div>
   </div>
 
+  <div class="card" id="filters-card" style="margin-top:16px; display:none">
+    <div class="filters-row">
+      <input type="text" id="search-input" class="search-input" placeholder="Buscar show, artista o venue…" />
+      <div class="filter-tabs" id="weekday-filter"></div>
+      <div class="filter-tabs" id="residency-filter">
+        <button data-v="all" class="active">Todos</button>
+        <button data-v="residency">Residencia</button>
+        <button data-v="unique">Único</button>
+      </div>
+    </div>
+    <div class="panel-note" id="filter-summary" style="margin-top:10px; margin-bottom:0"></div>
+  </div>
+
   <div id="table-area" class="skeleton">Cargando shows…</div>
 </main>
 
@@ -111,7 +124,9 @@ async function load() {
       const residency = e.is_residency ? '<span class="badge teal" style="margin-left:6px">residencia</span>' : "";
       tr.dataset.title = e.title.toLowerCase();
       tr.dataset.venue = e.venue.toLowerCase();
+      tr.dataset.artist = e.artist_name.toLowerCase();
       tr.dataset.weekday = e.weekday;
+      tr.dataset.residency = e.is_residency ? "residency" : "unique";
       tr.dataset.date = e.starts_at;
       tr.dataset.expected = e.expected_attendance;
       tr.dataset.fill = fillPct === null ? -1 : fillPct;
@@ -131,6 +146,62 @@ async function load() {
       tbody.appendChild(tr);
     }
     makeSortable(table.querySelector("table"));
+
+    // Filters — weekday chips built from days actually present in the data,
+    // search + residency toggle. Rows already carry the dataset.* attributes
+    // makeSortable() uses, so filtering just toggles display:none and leaves
+    // sort untouched (no re-render, no fight over row order).
+    const WEEKDAY_ORDER = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
+    const daysPresent = WEEKDAY_ORDER.filter((d) => events.some((e) => e.weekday === d));
+    const filterState = { search: "", weekday: "all", residency: "all" };
+    const allRows = [...tbody.querySelectorAll("tr")];
+
+    $("#weekday-filter").innerHTML =
+      `<button data-v="all" class="active">Todos</button>` +
+      daysPresent.map((d) => `<button data-v="${d}">${capitalize(d)}</button>`).join("");
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function applyFilters() {
+      let visible = 0;
+      for (const tr of allRows) {
+        const matchesSearch =
+          !filterState.search ||
+          tr.dataset.title.includes(filterState.search) ||
+          tr.dataset.venue.includes(filterState.search) ||
+          tr.dataset.artist.includes(filterState.search);
+        const matchesWeekday = filterState.weekday === "all" || tr.dataset.weekday === filterState.weekday;
+        const matchesResidency = filterState.residency === "all" || tr.dataset.residency === filterState.residency;
+        const show = matchesSearch && matchesWeekday && matchesResidency;
+        tr.style.display = show ? "" : "none";
+        if (show) visible++;
+      }
+      $("#filter-summary").textContent =
+        visible === events.length ? `${events.length} shows` : `${visible} de ${events.length} shows`;
+    }
+
+    function initTabGroup(containerId, key) {
+      const container = $(containerId);
+      container.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          filterState[key] = btn.dataset.v;
+          container.querySelectorAll("button").forEach((b) => b.classList.toggle("active", b === btn));
+          applyFilters();
+        });
+      });
+    }
+    initTabGroup("#weekday-filter", "weekday");
+    initTabGroup("#residency-filter", "residency");
+
+    $("#search-input").addEventListener("input", (e) => {
+      filterState.search = e.target.value.trim().toLowerCase();
+      applyFilters();
+    });
+
+    $("#filters-card").style.display = "block";
+    applyFilters();
   } catch (err) {
     renderError($("#table-area"), err);
   }

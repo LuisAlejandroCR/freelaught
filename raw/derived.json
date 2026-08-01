@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T18:23:07.154Z",
+  "generatedAt": "2026-08-01T19:39:06.360Z",
   "matchedGuestCount": 2719,
   "totalMatchedRevenue": 307303000,
   "vipCount": 544,
@@ -50175,21 +50175,55 @@
       }
     ]
   },
-  "mockRedemptionPartners": [
+  "puntosColombiaCategories": [
     {
-      "brand": "Café de la Esquina",
-      "cost_points": 150,
-      "reward": "Bebida gratis"
+      "category": "Retail / Mercado",
+      "partner": "Grupo Éxito",
+      "sharePct": 60,
+      "note": "La categoría más redimida a nivel país",
+      "venueRelevant": false
     },
     {
-      "brand": "Cine Nacional",
-      "cost_points": 800,
-      "reward": "Entrada 2x1"
+      "category": "Movilidad",
+      "partner": "Gasolina, peajes, SOAT",
+      "sharePct": 20,
+      "note": ">40% de usuarios redimieron · +21% vs año anterior",
+      "venueRelevant": false
     },
     {
-      "brand": "Transporte App",
-      "cost_points": 500,
-      "reward": "$10.000 en viajes"
+      "category": "Viajes",
+      "partner": "85% vuelos",
+      "sharePct": 10,
+      "note": "Top: Medellín, Bogotá, Cartagena, Barranquilla",
+      "venueRelevant": false
+    },
+    {
+      "category": "Marketplace",
+      "partner": "Tienda Online",
+      "sharePct": 10,
+      "note": "Canje directo por productos",
+      "venueRelevant": false
+    },
+    {
+      "category": "Gastronomía",
+      "partner": "Preferencia declarada",
+      "sharePct": 7.5,
+      "note": "7–8% — la categoría donde el venue compite directo",
+      "venueRelevant": true
+    },
+    {
+      "category": "Moda",
+      "partner": "Preferencia declarada",
+      "sharePct": 7.5,
+      "note": "7–8%",
+      "venueRelevant": false
+    },
+    {
+      "category": "Bienestar",
+      "partner": "Preferencia declarada",
+      "sharePct": 7.5,
+      "note": "7–8%",
+      "venueRelevant": false
     }
   ]
 }
