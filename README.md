@@ -29,7 +29,3 @@ npm run backtest  # valida el forecast contra julio (23/32 shows dentro de la ba
 npm test          # 37 tests: unit + fuzz + invariant
 npm run web       # http://localhost:3000 — dashboard, detalle, VIP, pitch
 ```
-
-## Documentación
-
-Ver [docs/](docs/README.md) para memoria técnica, plan y verificación.
