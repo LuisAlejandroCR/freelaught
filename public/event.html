@@ -39,6 +39,24 @@ async function load() {
     const typeEntries = Object.entries(e.ticket_type_mix).sort((a, b) => b[1] - a[1]);
     const typeTotal = typeEntries.reduce((s, [, c]) => s + c, 0);
 
+    // VIP guests come pre-sorted by revenue (vipByEvent in 04-derive.js
+    // preserves the revenue-desc order of vipGuests) — some shows list 30+,
+    // which was an unbounded wall of near-identical rows. Show the top 5,
+    // tuck the rest behind an expand toggle (same pattern as "foco por día").
+    const VIP_PREVIEW_COUNT = 5;
+    const vipPreview = e.vip_guests.slice(0, VIP_PREVIEW_COUNT);
+    const vipRest = e.vip_guests.slice(VIP_PREVIEW_COUNT);
+    function vipRowHtml(g) {
+      return `
+        <div class="vip-row">
+          <div class="vip-info">
+            <div class="vip-name">${g.name}</div>
+            <div class="vip-meta">afinidad: <b>${g.weekday_affinity}</b> · ${g.points} puntos</div>
+          </div>
+          <span class="badge ${g.weekday_affinity.includes("sábado") || g.weekday_affinity.includes("viernes") ? "teal" : "gray"}">${g.weekday_affinity}</span>
+        </div>`;
+    }
+
     $("#main").innerHTML = `
       <a href="/" style="color:var(--muted);font-size:13px">← Todos los shows</a>
 
@@ -84,18 +102,27 @@ async function load() {
       </div>
 
       <div class="card" style="margin-top:16px">
-        <div class="section-title" style="margin-top:0">Invitados VIP que vienen</div>
-        ${e.vip_guests.length ? e.vip_guests.map((g) => `
-          <div class="vip-row">
-            <div class="vip-info">
-              <div class="vip-name">${g.name}</div>
-              <div class="vip-meta">afinidad: <b>${g.weekday_affinity}</b> · ${g.points} puntos</div>
-            </div>
-            <span class="badge ${g.weekday_affinity.includes("sábado") || g.weekday_affinity.includes("viernes") ? "teal" : "gray"}">${g.weekday_affinity}</span>
-          </div>`).join("") : '<div class="empty">Sin VIP identificados en este show</div>'}
+        <div class="section-title" style="margin-top:0; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+          <span>Invitados VIP que vienen</span>
+          ${e.vip_guests.length ? `<span style="font-weight:400;font-size:12.5px;color:var(--muted)">${e.vip_guests.length} en total, ordenados por ingreso</span>` : ""}
+        </div>
+        ${e.vip_guests.length ? `
+          ${vipPreview.map(vipRowHtml).join("")}
+          ${vipRest.length ? `<div id="vip-rest">${vipRest.map(vipRowHtml).join("")}</div><button class="focus-expand-btn" id="vip-expand-btn" type="button" style="margin-top:12px">Ver ${vipRest.length} más</button>` : ""}
+        ` : '<div class="empty">Sin VIP identificados en este show</div>'}
         <div class="panel-note">Top 20% por ingreso del cohorte de invitados identificados (ver /vip).</div>
       </div>
     `;
+
+    const vipExpandBtn = $("#vip-expand-btn");
+    if (vipExpandBtn) {
+      const vipRestEl = $("#vip-rest");
+      vipRestEl.hidden = true;
+      vipExpandBtn.addEventListener("click", () => {
+        vipRestEl.hidden = !vipRestEl.hidden;
+        vipExpandBtn.textContent = vipRestEl.hidden ? `Ver ${vipRest.length} más` : "Ocultar";
+      });
+    }
 
     const st = shareState();
     const meta = $("#share-meta");

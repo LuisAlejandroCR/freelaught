@@ -27,6 +27,23 @@
     <div class="kpi"><div class="kpi-lab">Cargando…</div></div>
   </div>
 
+  <!-- Recomendación va inmediatamente después del estado (KPIs) — es la
+       respuesta a "¿dónde me enfoco?". El resultado del cruce (metodología /
+       confianza de los datos) va DESPUÉS: es contexto de soporte, no la
+       recomendación en sí, y no debe competir por el mismo espacio. -->
+  <div class="card" id="focus-card" style="margin-top:16px; display:none">
+    <div class="section-title" style="margin-top:0; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+      <span>Recomendación — foco por día</span>
+      <div class="filter-tabs" id="focus-metric-filter">
+        <button data-v="expected" class="active">Asistencia esperada</button>
+        <button data-v="vip">Top VIP</button>
+      </div>
+    </div>
+    <div class="panel-note" id="focus-subtitle" style="margin-top:-6px; margin-bottom:14px"></div>
+    <div class="focus-lead" id="focus-lead"></div>
+    <div class="focus-list" id="focus-list"></div>
+  </div>
+
   <div class="card" id="match-result-card" style="margin-top:16px">
     <div class="section-title" style="margin-top:0">Resultado del cruce (Boom × FreeTicket)</div>
     <div class="segbar" id="match-segbar"></div>
@@ -46,19 +63,6 @@
     <div class="panel-note" id="filter-summary" style="margin-top:10px; margin-bottom:0"></div>
   </div>
 
-  <div class="card" id="focus-card" style="margin-top:16px; display:none">
-    <div class="section-title" style="margin-top:0; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
-      <span>Recomendación — foco por día</span>
-      <div class="filter-tabs" id="focus-metric-filter">
-        <button data-v="expected" class="active">Asistencia esperada</button>
-        <button data-v="vip">Top VIP</button>
-      </div>
-    </div>
-    <div class="panel-note" id="focus-subtitle" style="margin-top:-6px; margin-bottom:14px"></div>
-    <div class="focus-lead" id="focus-lead"></div>
-    <div class="focus-list" id="focus-list"></div>
-  </div>
-
   <div id="table-area" class="skeleton">Cargando shows…</div>
 </main>
 
@@ -73,9 +77,6 @@ async function load() {
     const [events, vip, stats] = await Promise.all([getJSON("/api/events"), getJSON("/api/vip"), getJSON("/api/stats")]);
 
     const totalExpected = events.reduce((s, e) => s + e.expected_attendance, 0);
-    const biggest = events.length
-      ? events.reduce((a, b) => (b.expected_attendance > a.expected_attendance ? b : a), events[0])
-      : { title: "—", expected_attendance: 0 };
     const withCap = events.filter((e) => e.capacity);
     const avgFill = withCap.length
       ? (withCap.reduce((s, e) => s + Math.min(1, e.expected_attendance / e.capacity), 0) / withCap.length) * 100
@@ -208,11 +209,13 @@ async function load() {
       });
     $("#focus-card").style.display = "block";
 
+    // "Show más grande" ya no es un KPI aparte — el banner de "foco por día"
+    // dice lo mismo con más contexto (día, por qué, delta vs. promedio), así
+    // que mantenerlo aquí solo duplicaba el mismo dato con menos información.
     $("#kpis").innerHTML = `
       <div class="kpi"><div class="kpi-num mono">${fmtInt(totalExpected)}</div><div class="kpi-lab">asistentes esperados · agosto</div></div>
-      <div class="kpi teal"><div class="kpi-num mono">${fmtInt(biggest.expected_attendance)}</div><div class="kpi-lab">show más grande · ${biggest.title}</div></div>
       <div class="kpi"><div class="kpi-num mono">${avgFill.toFixed(0)}<span class="kpi-suf">%</span></div><div class="kpi-lab">llenado promedio esperado</div></div>
-      <div class="kpi"><div class="kpi-num mono">${vip.vipRevenueSharePct.toFixed(1)}<span class="kpi-suf">%</span></div><div class="kpi-lab">ingreso en manos del top 20% VIP</div></div>
+      <div class="kpi teal"><div class="kpi-num mono">${vip.vipRevenueSharePct.toFixed(1)}<span class="kpi-suf">%</span></div><div class="kpi-lab">ingreso en manos del top 20% VIP</div></div>
     `;
 
     const unmatched = stats.totalSales - stats.matched;
