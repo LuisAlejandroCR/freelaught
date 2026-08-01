@@ -3,6 +3,8 @@ import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname } from "node:path";
 import { readCsv } from "../lib/csv.js";
+import { HIGH_THRESHOLD } from "../pipeline/02-match.js";
+import { backtest } from "../pipeline/backtest.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "..");
@@ -71,6 +73,32 @@ function eventDetail(event, data) {
   return { ...summary, ticket_type_mix: typeMix, vip_guests: vipAttending };
 }
 
+// Pipeline-wide stats (match rate, backtest) that don't belong to a single
+// event or guest — the pitch deck reads this instead of baking numbers into
+// its HTML, so it always reflects whatever matches.csv/forecast.csv currently
+// say instead of going stale the moment the pipeline is re-run.
+function computeStats() {
+  const sales = JSON.parse(readFileSync(join(RAW_DIR, "ft_sales.json"), "utf-8"));
+  const matches = readCsv(join(ROOT, "matches.csv")).map((m) => ({ ...m, confidence: Number(m.confidence) }));
+  const high = matches.filter((m) => m.confidence >= HIGH_THRESHOLD).length;
+  const medium = matches.length - high;
+  const bt = backtest();
+
+  return {
+    totalSales: sales.length,
+    matched: matches.length,
+    matchRatePct: sales.length ? (matches.length / sales.length) * 100 : 0,
+    high,
+    medium,
+    backtest: {
+      withinBand: bt.withinBand,
+      total: bt.total,
+      coveragePct: bt.total ? (bt.withinBand / bt.total) * 100 : 0,
+      meanAbsError: bt.meanAbsError,
+    },
+  };
+}
+
 function sendJson(res, status, payload) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify(payload));
@@ -102,6 +130,9 @@ const server = createServer((req, res) => {
       const event = data.augustEvents.find((e) => e.event_id === id);
       if (!event) return sendJson(res, 404, { error: "event not found" });
       return sendJson(res, 200, eventDetail(event, data));
+    }
+    if (path === "/api/stats") {
+      return sendJson(res, 200, computeStats());
     }
     if (path === "/api/vip") {
       const data = loadData();

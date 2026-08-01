@@ -8,6 +8,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
+/* Sección "stage": dark, como el hero de appfreeticket.com */
+:root {
+  --bg: #070707; --text: #ffffff; --card: #17181b; --card-2: #1e1f24; --border: #26272b;
+  --muted: #999999; --muted-2: #717182; --primary: #ffd102; --primary-dim: rgba(255, 209, 2, 0.12);
+  --teal: #1ebbb2; --teal-dim: rgba(30, 187, 178, 0.12); --purple: #5615c1; --orange: #ff4d2e; --red: #e5484d;
+}
 /* ── Pitch layout (sistema visual appfreeticket, sin canvas) ── */
 html, body { height: 100%; overflow: hidden; }
 #deck { position: fixed; inset: 0; }
@@ -73,13 +79,13 @@ section.slide.on { opacity: 1; pointer-events: auto; }
   <!-- 0 · Hook (0–35s) -->
   <section class="slide on" data-t="0">
     <div class="kicker">Freelaught — hackathon Boom × FreeTicket</div>
-    <div class="giant mono" id="n-sales">3.678</div>
-    <h1 style="margin-top:22px">Agosto vende <em>30 shows</em>.<br>¿Cuántos vendrán?</h1>
+    <div class="giant mono" id="n-sales">—</div>
+    <h1 style="margin-top:22px">Agosto vende <em id="n-events-h1">—</em> shows.<br>¿Cuántos vendrán?</h1>
     <div class="lead">Freelaught ya tiene los datos. Lo que no sabe: quién viene, quién es VIP y qué día prefiere salir. Este sistema se lo dice al operador del venue antes de abrir la puerta.</div>
     <div class="chips">
-      <span class="chip-big"><b id="n-matched">2.719</b> invitados identificados</span>
-      <span class="chip-big"><b id="n-events">30</b> shows en agosto</span>
-      <span class="chip-big"><b id="n-share">59,3%</b> del ingreso · top 20%</span>
+      <span class="chip-big"><b id="n-matched">—</b> invitados identificados</span>
+      <span class="chip-big"><b id="n-events">—</b> shows en agosto</span>
+      <span class="chip-big"><b id="n-share">—</b> del ingreso · top 20%</span>
     </div>
   </section>
 
@@ -90,19 +96,19 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     <div class="pitch-grid">
       <div class="pitch-card">
         <div class="ic">🔗</div>
-        <div class="n" id="n-matched2">2.719</div>
+        <div class="n" id="n-matched2">—</div>
         <div class="t">Identificación</div>
         <div class="s">Matching Boom × FreeTicket por email, teléfono y nombre, con puntuación de confianza. Un match inventado vale menos que ninguno.</div>
       </div>
       <div class="pitch-card">
         <div class="ic">📈</div>
-        <div class="n teal" id="n-events2">30</div>
+        <div class="n teal" id="n-events2">—</div>
         <div class="t">Asistencia esperada</div>
         <div class="s">Cada show de agosto con banda de confianza [p10–p90]: tasas por tipo de ticket, historial de la residencia y tasa de uso del invitado.</div>
       </div>
       <div class="pitch-card">
         <div class="ic">👑</div>
-        <div class="n purple" id="n-share2">59,3%</div>
+        <div class="n purple" id="n-share2">—</div>
         <div class="t">VIP y puntos</div>
         <div class="s">Pareto del cohorte identificado: quién concentra el ingreso, qué día prefiere salir y cuántos puntos tiene para premiarlo.</div>
       </div>
@@ -116,16 +122,14 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     <div class="term-card" style="margin-top:26px">
       <div><span class="p">$</span> npm run run-all</div>
       <div class="ok">fetch → match → forecast → derive</div>
-      <div class="hl">Matched: 3.841 (60,2%) · HIGH 3.483 · MEDIUM 358</div>
-      <div class="hl">August events forecasted: 30 · bandas [p10–p90]</div>
+      <div class="hl">Matched: <span id="n-match-count">—</span> (<span id="n-match-pct">—</span>%) · HIGH <span id="n-match-high">—</span> · MEDIUM <span id="n-match-medium">—</span></div>
+      <div class="hl">August events forecasted: <span id="n-forecast-count">—</span> · bandas [p10–p90]</div>
       <div><span class="p">$</span> npm run web</div>
       <div class="ok">Freelaught product layer → http://localhost:3000</div>
     </div>
     <div class="dash-mock">
-      <div class="bar-head"><span class="dot y"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:6px">Freelaught — Shows de agosto</span></div>
-      <div class="row"><span>Trasnoche Cali — residencia sábado</span><span><span class="mono">92</span> <span class="band">[83–101]</span></span></div>
-      <div class="row"><span>La Bodega Improvisa — residencia miércoles</span><span><span class="mono">149</span> <span class="band">[134–164]</span></span></div>
-      <div class="row"><span>Sin Filtro — Especial de Improvisación</span><span><span class="mono">376</span> <span class="band">[321–405]</span></span></div>
+      <div class="bar-head"><span class="dot y"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:6px">Freelaught — Shows más grandes de agosto</span></div>
+      <div id="dash-mock-rows"><div class="row"><span class="band">cargando…</span></div></div>
     </div>
     <div class="live-cta">
       <a class="btn" href="/">Abrir el dashboard en vivo</a>
@@ -139,12 +143,12 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     <h1>Lo validamos contra <em>julio</em>, que ya pasó.</h1>
     <div class="pitch-grid">
       <div class="pitch-card">
-        <div class="n">72%</div>
-        <div class="t">23 de 32 shows</div>
+        <div class="n" id="n-bt-coverage">—</div>
+        <div class="t" id="n-bt-fraction">— de — shows</div>
         <div class="s">La asistencia real de julio cayó dentro de nuestra banda [p10–p90] predicha con el mismo pipeline.</div>
       </div>
       <div class="pitch-card">
-        <div class="n teal">9,2</div>
+        <div class="n teal" id="n-bt-mae">—</div>
         <div class="t">asistentes de error medio</div>
         <div class="s">Error absoluto medio por show: el pronóstico apuesta por el tipo de ticket, no por corazonadas.</div>
       </div>
@@ -195,15 +199,44 @@ dots.forEach((d) => d.addEventListener("click", () => { show(Number(d.dataset.i)
 
 (async () => {
   try {
-    const [events, vip] = await Promise.all([getJSON("/api/events"), getJSON("/api/vip")]);
+    const [events, vip, stats] = await Promise.all([getJSON("/api/events"), getJSON("/api/vip"), getJSON("/api/stats")]);
     const totalExpected = events.reduce((s, e) => s + e.expected_attendance, 0);
-    const share = vip.vipRevenueSharePct.toFixed(1).replace(".", ",");
+    const share = vip.vipRevenueSharePct.toFixed(1).replace(".", ",") + "%";
     const matched = fmtInt(vip.matchedGuestCount);
-    for (const [sel, v] of [["#n-sales", fmtInt(totalExpected)], ["#n-matched", matched], ["#n-matched2", matched], ["#n-events", events.length], ["#n-events2", events.length], ["#n-share", share], ["#n-share2", share]]) {
+    const matchPct = stats.matchRatePct.toFixed(1).replace(".", ",");
+    const btCoverage = stats.backtest.coveragePct.toFixed(0) + "%";
+    const btMae = stats.backtest.meanAbsError.toFixed(1).replace(".", ",");
+
+    const values = {
+      "#n-sales": fmtInt(totalExpected),
+      "#n-events-h1": events.length,
+      "#n-matched": matched,
+      "#n-matched2": matched,
+      "#n-events": events.length,
+      "#n-events2": events.length,
+      "#n-share": share,
+      "#n-share2": share,
+      "#n-match-count": fmtInt(stats.matched),
+      "#n-match-pct": matchPct,
+      "#n-match-high": fmtInt(stats.high),
+      "#n-match-medium": fmtInt(stats.medium),
+      "#n-forecast-count": events.length,
+      "#n-bt-coverage": btCoverage,
+      "#n-bt-fraction": `${stats.backtest.withinBand} de ${stats.backtest.total} shows`,
+      "#n-bt-mae": btMae,
+    };
+    for (const [sel, v] of Object.entries(values)) {
       const el = $(sel);
       if (el) el.textContent = v;
     }
-  } catch { /* fallback: valores seedeados del pipeline */ }
+
+    const top3 = [...events].sort((a, b) => b.expected_attendance - a.expected_attendance).slice(0, 3);
+    $("#dash-mock-rows").innerHTML = top3
+      .map((e) => `<div class="row"><span>${e.title}</span><span><span class="mono">${fmtInt(e.expected_attendance)}</span> <span class="band">[${fmtInt(e.p10)}–${fmtInt(e.p90)}]</span></span></div>`)
+      .join("");
+  } catch (err) {
+    console.error("No se pudo cargar /api/stats, /api/events o /api/vip:", err);
+  }
 })();
 requestAnimationFrame(tick);
 </script>

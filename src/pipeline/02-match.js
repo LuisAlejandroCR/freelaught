@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "..");
 const RAW_DIR = join(ROOT, "raw");
 
-const HIGH_THRESHOLD = 0.75;
+export const HIGH_THRESHOLD = 0.75;
 const REJECT_THRESHOLD = 0.45; // below this: no match written — inventing one is worse than none
 const AMBIGUOUS_GAP = 0.1; // top-2 candidates closer than this, with top < 0.9, are treated as ambiguous
 
