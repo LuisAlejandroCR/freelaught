@@ -126,12 +126,11 @@ async function load() {
 
     const st = shareState();
     const meta = $("#share-meta");
-    const liveHost = location.hostname !== "localhost" && location.hostname !== "127.0.0.1";
     if (st.expired) {
       meta.innerHTML = '<span class="expired">Enlace expirado</span> — regenéralo abriendo esta página de nuevo (demo: expiración en el cliente, sin revocación en servidor).';
       $("#share-btn").disabled = true;
     } else {
-      const expiry = `El enlace expira en ${fmtLeft(st.left)}`;
+      meta.textContent = `El enlace expira en ${fmtLeft(st.left)}`;
     }
     $("#share-btn").addEventListener("click", () => {
       const text = `🎟️ ${e.title} en ${e.venue} (${fmtDay(e.starts_at)}) — asistencia esperada: ${fmtInt(e.expected_attendance)} personas. ¿Vienes?`;

@@ -130,13 +130,13 @@ async function load() {
       const avg = allValues.reduce((s, v) => s + v, 0) / allValues.length;
       const globalMax = Math.max(1, ...allValues);
 
-      function delta(v) {
+      function delta(v, phrase) {
         if (avg <= 0) return { label: "sin promedio", up: true };
         const d = Math.round(((v - avg) / avg) * 100);
-        return { label: `${d >= 0 ? "+" : ""}${d}% vs. prom.`, up: d >= 0 };
+        return { label: `${d >= 0 ? "+" : ""}${d}% ${phrase}`, up: d >= 0 };
       }
       function itemRow(e) {
-        const dl = delta(e[m.key]);
+        const dl = delta(e[m.key], "vs. prom.");
         const barPct = Math.max(4, (e[m.key] / globalMax) * 100);
         return `
           <a class="focus-item-body" href="/events/${e.event_id}">
@@ -186,13 +186,13 @@ async function load() {
       // Lead recommendation: the single best show across the whole week for
       // this metric — the answer, not just another data point.
       const lead = dayTops.reduce((a, b) => (b.top[m.key] > a.top[m.key] ? b : a));
-      const leadDelta = delta(lead.top[m.key]);
+      const leadDelta = delta(lead.top[m.key], "vs. el promedio de agosto");
       $("#focus-lead").innerHTML = `
         <div class="n mono${m.barClass ? " " + m.barClass : ""}">${fmtInt(lead.top[m.key])}</div>
         <div class="focus-lead-body">
           <div class="focus-lead-tag">Foco de la semana · ${capitalize(lead.day)}</div>
           <div class="focus-lead-title">${lead.top.title}</div>
-          <div class="focus-lead-why">${m.label} ${leadDelta.label.replace("vs. prom.", "vs. el promedio de agosto")} (${fmtInt(Math.round(avg))} ${m.unit} en promedio)</div>
+          <div class="focus-lead-why">${m.label} ${leadDelta.label} (${fmtInt(Math.round(avg))} ${m.unit} en promedio)</div>
         </div>`;
     }
     renderFocus();
