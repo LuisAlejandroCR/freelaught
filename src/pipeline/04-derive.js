@@ -31,9 +31,11 @@ const PUNTOS_COLOMBIA_CATEGORIES = [
 ];
 
 // FreeTicket's own venue rewards — not researched market data like the list
-// above, this is a product decision: redeem the same real Boom points
-// directly at the venue (comida, souvenir), independent of any external
-// alliance. Concept only — no real fulfillment/POS integration exists yet.
+// above. This mirrors a redemption mechanism that already exists live in
+// FreeTicket (per the product team), just not currently surfaced on the
+// public appfreeticket.com/comunidades page — we expose it here using the
+// guest's real Boom points, independent of any external alliance like
+// Puntos Colombia.
 const FREETICKET_REWARDS = [
   { item: "Combo comida", costPoints: 50, detail: "Snack + bebida en cualquier show", icon: "🍟" },
   { item: "Souvenir de la noche", costPoints: 120, detail: "Poster o merch del show que estás viendo", icon: "🎁" },

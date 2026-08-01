@@ -17,5 +17,5 @@ La **mezcla de tipos de ticket** (pagado ~94%, cortesía ~39% empírico) domina 
 
 1. Integración real de redención (Puntos Colombia u otro aliado) en vez del panel mock.
 2. Revisar a mano una muestra más grande de los 2.209 casos "ambiguos" para ver si un cuarto campo (ej. ciudad) ayuda a desempatar sin arriesgar falsos positivos.
-3. Publicar el `/events/:id` en una URL real (Vercel) para que el link efímero de WhatsApp funcione fuera de localhost.
+3. Un segundo lente de riesgo en la recomendación del dashboard: hoy "foco por día" prioriza por tamaño (asistencia/VIP); agregar el ángulo inverso — shows con llenado esperado más bajo, que necesitan más empuje de marketing antes de la fecha.
 4. Curva de llegada (hora de check-in, no solo cuántos) — quedó fuera de alcance esta vez.

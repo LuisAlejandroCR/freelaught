@@ -136,7 +136,14 @@ section.slide.on { opacity: 1; pointer-events: auto; }
       <div class="ok">Freelaught product layer → http://localhost:3000</div>
     </div>
     <div class="dash-mock">
-      <div class="bar-head"><span class="dot y"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:6px">Freelaught — Top VIP por ingreso</span></div>
+      <div class="bar-head">
+        <span class="dot y"></span><span class="dot"></span><span class="dot"></span><span style="margin-left:6px">Freelaught — Top VIP por ingreso</span>
+        <div class="filter-tabs" id="pitch-vip-filter" style="margin-left:auto">
+          <button data-n="3" class="active">Top 3</button>
+          <button data-n="10">Top 10</button>
+          <button data-n="25">Top 25</button>
+        </div>
+      </div>
       <div id="dash-mock-rows"><div class="row"><span class="band">cargando…</span></div></div>
     </div>
     <div class="live-cta">
@@ -258,10 +265,25 @@ dots.forEach((d) => d.addEventListener("click", () => { show(Number(d.dataset.i)
 
     // Preview del mock apunta a /vip (no al dashboard) — el "en vivo" ahora
     // hace foco ahí, así que lo que se ve antes del clic real ya es VIP.
-    const top3 = [...vip.vipGuests].slice(0, 3);
-    $("#dash-mock-rows").innerHTML = top3
-      .map((g) => `<div class="row"><span>${g.name}</span><span><span class="mono">${fmtCOP(g.revenue)}</span> <span class="band">${fmtInt(g.points)} pts</span></span></div>`)
-      .join("");
+    // Filtro Top 3/10/25 replica el mismo filtro real de /vip, para que el
+    // presentador pueda mostrarlo interactivamente sin salir del slide.
+    function renderPitchVip(n) {
+      const rows = vip.vipGuests.slice(0, n);
+      $("#dash-mock-rows").innerHTML = rows
+        .map((g) => `<div class="row"><span>${g.name}</span><span><span class="mono">${fmtCOP(g.revenue)}</span> <span class="band">${fmtInt(g.points)} pts</span></span></div>`)
+        .join("");
+    }
+    renderPitchVip(3);
+    $("#pitch-vip-filter")
+      .querySelectorAll("button")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          $("#pitch-vip-filter")
+            .querySelectorAll("button")
+            .forEach((b) => b.classList.toggle("active", b === btn));
+          renderPitchVip(Number(btn.dataset.n));
+        });
+      });
   } catch (err) {
     console.error("No se pudo cargar /api/stats, /api/events o /api/vip:", err);
   }
