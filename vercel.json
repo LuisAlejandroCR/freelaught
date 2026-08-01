@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    { "source": "/vip", "destination": "/vip.html" },
+    { "source": "/pitch", "destination": "/pitch.html" },
+    { "source": "/events/:id", "destination": "/event.html" }
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "{raw/**,matches.csv,forecast.csv}"
+    }
+  }
+}

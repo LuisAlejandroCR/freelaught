@@ -1,0 +1,31 @@
+event_id,title,is_residency,residency_siblings,residency_rate,tickets_sold,expected_attendance,p10,p90,fill_rate_expected
+ft_evt_0040,Trasnoche Cali — residencia sábado,true,4,0.818,118,92,83,101,0.61
+ft_evt_0058,Roast de Medianoche — Comedia sin Red,false,0,,232,123,93,155,0.49
+ft_evt_0014,Micrófono Suelto — residencia martes,true,4,0.564,120,79,69,88,0.36
+ft_evt_0032,La Bodega Improvisa — residencia miércoles,true,5,0.744,201,149,134,164,0.60
+ft_evt_0023,Doble Sentido — residencia jueves,true,5,0.813,192,157,143,170,0.63
+ft_evt_0056,Sin Filtro — Especial de Improvisación,false,0,,378,332,284,360,0.74
+ft_evt_0006,Mala Hora — residencia viernes,true,5,0.813,122,70,60,80,0.39
+ft_evt_0052,Segunda Función — Especial de Improvisación,false,0,,436,323,265,366,0.40
+ft_evt_0060,Sin Filtro — Material Nuevo,false,0,,623,347,270,430,0.43
+ft_evt_0041,Trasnoche Cali — residencia sábado,true,4,0.818,94,75,67,82,0.50
+ft_evt_0015,Micrófono Suelto — residencia martes,true,4,0.564,115,76,66,85,0.30
+ft_evt_0033,La Bodega Improvisa — residencia miércoles,true,5,0.744,88,70,62,76,0.39
+ft_evt_0024,Doble Sentido — residencia jueves,true,5,0.813,80,63,56,69,0.42
+ft_evt_0007,Mala Hora — residencia viernes,true,5,0.813,78,45,37,52,0.38
+ft_evt_0042,Trasnoche Cali — residencia sábado,true,4,0.818,71,55,50,61,0.37
+ft_evt_0016,Micrófono Suelto — residencia martes,true,4,0.564,88,56,48,63,0.25
+ft_evt_0048,Cuento Corto — Show de Temporada,false,0,,210,160,131,179,0.36
+ft_evt_0062,Los del Fondo — Función Única,false,0,,286,133,96,173,0.22
+ft_evt_0034,La Bodega Improvisa — residencia miércoles,true,5,0.744,61,45,39,50,0.38
+ft_evt_0050,Sin Filtro — Especial de Improvisación,false,0,,424,376,320,405,0.47
+ft_evt_0025,Doble Sentido — residencia jueves,true,5,0.813,98,80,72,87,0.36
+ft_evt_0008,Mala Hora — residencia viernes,true,5,0.813,58,51,45,55,0.42
+ft_evt_0046,Tres Sillas — Función Única,false,0,,427,324,273,364,0.27
+ft_evt_0043,Trasnoche Cali — residencia sábado,true,4,0.818,65,36,30,43,0.24
+ft_evt_0017,Micrófono Suelto — residencia martes,true,4,0.564,48,33,28,37,0.28
+ft_evt_0054,Cuento Corto — Comedia sin Red,false,0,,273,149,114,184,0.19
+ft_evt_0035,La Bodega Improvisa — residencia miércoles,true,5,0.744,67,52,46,57,0.29
+ft_evt_0026,Doble Sentido — residencia jueves,true,5,0.813,63,50,44,55,0.23
+ft_evt_0009,Mala Hora — residencia viernes,true,5,0.813,37,31,28,35,0.26
+ft_evt_0044,Trasnoche Cali — residencia sábado,true,4,0.818,56,46,41,51,0.21

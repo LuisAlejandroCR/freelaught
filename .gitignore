@@ -23,6 +23,8 @@ docs/
 # Hackathon API token — never commit
 .ft-hack.json
 
-# Cached raw API pulls — regenerable
-raw/
+# raw/*.json IS committed (not ignored): the Vercel deployment bundles it as
+# static data for the serverless functions instead of live-fetching on every
+# cold start. Synthetic, no-PII data per the hackathon brief. Re-derivable
+# anytime via `npm run fetch -- --fresh`.
 

@@ -35,7 +35,11 @@
 
   <div class="grid-2" style="margin-top:16px">
     <div class="card">
-      <div class="section-title" style="margin-top:0">Top VIP</div>
+      <div class="section-title" style="margin-top:0; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap">
+        <span>Top VIP</span>
+        <div class="filter-tabs" id="vip-filter"></div>
+      </div>
+      <div class="panel-note" id="vip-filter-summary" style="margin-top:0; margin-bottom:10px"></div>
       <div id="vip-list"><div class="skeleton">Cargando…</div></div>
     </div>
     <div class="card">
@@ -53,40 +57,18 @@
 
 <script src="/app.js"></script>
 <script>
-async function load() {
-  try {
-    const v = await getJSON("/api/vip");
+const FILTER_OPTIONS = [10, 25, 0]; // 0 = todos
+let filterN = 10;
+let allGuests = [];
+let totalMatchedRevenue = 0;
 
-    $("#kpis").innerHTML = `
-      <div class="kpi"><div class="kpi-num mono">${v.vipRevenueSharePct.toFixed(1)}<span class="kpi-suf">%</span></div><div class="kpi-lab">del ingreso matcheado · top 20%</div></div>
-      <div class="kpi teal"><div class="kpi-num mono">${fmtInt(v.vipGuests.length)}</div><div class="kpi-lab">invitados VIP · de ${fmtInt(v.matchedGuestCount)} identificados</div></div>
-    `;
+function renderVipList() {
+  const guests = filterN > 0 ? allGuests.slice(0, filterN) : allGuests;
+  const maxRev = allGuests[0]?.revenue ?? 1;
 
-    const guests = v.vipGuests;
-    const maxRev = guests[0]?.revenue ?? 1;
-    let cum = 0;
-    const cumPcts = guests.map((g) => {
-      cum += g.revenue;
-      return v.totalMatchedRevenue > 0 ? (cum / v.totalMatchedRevenue) * 100 : 0;
-    });
-    const points = guests.map((g, i) => `${(i / Math.max(1, guests.length - 1)) * 100},${100 - cumPcts[i]}`).join(" ");
-    const curveSvg = `
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:260px;display:block">
-        ${[0, 25, 50, 75, 100].map((g) => `<line class="curve-grid" x1="0" y1="${100 - g}" x2="100" y2="${100 - g}"/>`).join("")}
-        <line class="curve-mark" x1="20" y1="0" x2="20" y2="100"/>
-        <polyline class="curve-area" points="0,100 ${points} 100,100"/>
-        <polyline class="curve-line" points="${points}"/>
-        <text x="1" y="12">100%</text>
-        <text x="1" y="37">75%</text>
-        <text x="1" y="62">50%</text>
-        <text x="1" y="87">25%</text>
-        <text x="24" y="12" fill="#1ebbb2">20% de invitados</text>
-      </svg>`;
-
-    const list = guests
-      .slice(0, 60)
-      .map(
-        (g, i) => `
+  $("#vip-list").innerHTML = guests
+    .map(
+      (g, i) => `
       <div class="vip-row">
         <div class="rank">${i + 1}</div>
         <div class="vip-info">
@@ -98,11 +80,84 @@ async function load() {
           <div class="l">${((g.revenue / maxRev) * 100).toFixed(0)}% del top</div>
         </div>
       </div>`
-      )
-      .join("");
+    )
+    .join("");
 
-    $("#curve").innerHTML = curveSvg;
-    $("#vip-list").innerHTML = list;
+  const subsetRevenue = guests.reduce((s, g) => s + g.revenue, 0);
+  const pctOfMatched = totalMatchedRevenue > 0 ? (subsetRevenue / totalMatchedRevenue) * 100 : 0;
+  const label = filterN > 0 ? `estos ${guests.length}` : `los ${guests.length} VIP`;
+  $("#vip-filter-summary").textContent =
+    `${label} generan ${fmtCOP(subsetRevenue)} — ${pctOfMatched.toFixed(1)}% del ingreso matcheado total.`;
+
+  document.querySelectorAll("#vip-list .vip-row").forEach((row) => {
+    row.addEventListener("click", () => {
+      row.style.background = "rgba(0, 0, 0, 0.04)";
+      setTimeout(() => (row.style.background = ""), 300);
+    });
+  });
+}
+
+function renderFilterTabs() {
+  $("#vip-filter").innerHTML = FILTER_OPTIONS
+    .map((n) => {
+      const label = n === 0 ? `Todos (${allGuests.length})` : `Top ${n}`;
+      return `<button data-n="${n}" class="${n === filterN ? "active" : ""}">${label}</button>`;
+    })
+    .join("");
+  $("#vip-filter").querySelectorAll("button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterN = Number(btn.dataset.n);
+      renderFilterTabs();
+      renderVipList();
+    });
+  });
+}
+
+async function load() {
+  try {
+    const v = await getJSON("/api/vip");
+    allGuests = v.vipGuests;
+    totalMatchedRevenue = v.totalMatchedRevenue;
+
+    $("#kpis").innerHTML = `
+      <div class="kpi"><div class="kpi-num mono">${v.vipRevenueSharePct.toFixed(1)}<span class="kpi-suf">%</span></div><div class="kpi-lab">del ingreso matcheado · top 20%</div></div>
+      <div class="kpi teal"><div class="kpi-num mono">${fmtInt(v.vipGuests.length)}</div><div class="kpi-lab">invitados VIP · de ${fmtInt(v.matchedGuestCount)} identificados</div></div>
+    `;
+
+    let cum = 0;
+    const cumPcts = allGuests.map((g) => {
+      cum += g.revenue;
+      return totalMatchedRevenue > 0 ? (cum / totalMatchedRevenue) * 100 : 0;
+    });
+    const points = allGuests.map((g, i) => `${(i / Math.max(1, allGuests.length - 1)) * 100},${100 - cumPcts[i]}`).join(" ");
+
+    // Axis labels live OUTSIDE the SVG as plain HTML, positioned by %.
+    // Reason: this SVG uses viewBox="0 0 100 100" with preserveAspectRatio="none"
+    // (deliberately non-uniform scale, so the curve fills the wide card). CSS
+    // font-size on an SVG <text> is interpreted in that same distorted
+    // coordinate space, so "9px" became ~9% of the chart's height — the
+    // labels rendered huge and overlapped each other. HTML text ignores the
+    // SVG viewBox entirely, so it's immune to that distortion.
+    $("#curve").innerHTML = `
+      <div class="curve-wrap">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+          ${[0, 25, 50, 75, 100].map((g) => `<line class="curve-grid" x1="0" y1="${100 - g}" x2="100" y2="${100 - g}"/>`).join("")}
+          <line class="curve-mark" x1="20" y1="0" x2="20" y2="100"/>
+          <polyline class="curve-area" points="0,100 ${points} 100,100"/>
+          <polyline class="curve-line" points="${points}"/>
+        </svg>
+        <div class="curve-axis-labels">
+          <span style="top:12%">100%</span>
+          <span style="top:37%">75%</span>
+          <span style="top:62%">50%</span>
+          <span style="top:87%">25%</span>
+        </div>
+        <div class="curve-mark-label" style="left:20%">20% de invitados</div>
+      </div>`;
+
+    renderFilterTabs();
+    renderVipList();
+
     $("#partners").innerHTML = v.mockRedemptionPartners
       .map(
         (p) => `
@@ -114,13 +169,6 @@ async function load() {
       </div>`
       )
       .join("");
-
-    document.querySelectorAll("#vip-list .vip-row").forEach((row) => {
-      row.addEventListener("click", () => {
-        row.style.background = "rgba(0, 0, 0, 0.04)";
-        setTimeout(() => (row.style.background = ""), 300);
-      });
-    });
   } catch (err) {
     renderError($("#kpis"), err);
     $("#curve").innerHTML = "";
