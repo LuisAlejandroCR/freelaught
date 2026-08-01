@@ -187,6 +187,17 @@ td.title-cell span { font-size: 12.5px; color: var(--muted); }
 .seg-legend-item b { font-weight: 800; }
 .seg-legend-item .pct { color: var(--muted); font-size: 12px; }
 
+/* ── Recomendación: foco por día (top 3 shows por asistencia esperada) ── */
+.focus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.focus-day { background: var(--card-2); border: 1px solid var(--border); border-radius: 11px; padding: 13px 14px; }
+.focus-day-lab { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 9px; }
+.focus-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(224, 224, 224, 0.6); font-size: 13px; }
+.focus-row:last-child { border-bottom: none; }
+.focus-row:hover .focus-title { text-decoration: underline; }
+.focus-rank { width: 19px; height: 19px; border-radius: 6px; background: var(--primary-dim); color: #5b4a00; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.focus-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.focus-num { color: var(--text); font-weight: 700; font-size: 12.5px; flex-shrink: 0; }
+
 /* ── Filter tabs (Top VIP, shows weekday/residency) ── */
 .filter-tabs { display: flex; gap: 4px; background: var(--card-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; flex-wrap: wrap; }
 .filter-tabs button {
