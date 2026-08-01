@@ -76,7 +76,7 @@ section.slide.on { opacity: 1; pointer-events: auto; }
   <div id="prog"></div>
   <div id="sdots"><div class="sdot on" data-i="0"></div><div class="sdot" data-i="1"></div><div class="sdot" data-i="2"></div><div class="sdot" data-i="3"></div></div>
 
-  <!-- 0 · Hook (0–35s) -->
+  <!-- 0 · Hook (0–20s) — pitch -->
   <section class="slide on" data-t="0">
     <div class="kicker">Freelaught — hackathon Boom × FreeTicket</div>
     <div class="giant mono" id="n-sales">—</div>
@@ -89,8 +89,8 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     </div>
   </section>
 
-  <!-- 1 · El sistema (35–70s) -->
-  <section class="slide" data-t="35000">
+  <!-- 1 · El sistema (20–50s) — solución -->
+  <section class="slide" data-t="20000">
     <div class="kicker">Cómo funciona</div>
     <h1>Un pipeline que conecta <em>dos plataformas</em> y produce una decisión.</h1>
     <div class="pitch-grid">
@@ -115,8 +115,8 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     </div>
   </section>
 
-  <!-- 2 · En vivo (70–120s) -->
-  <section class="slide" data-t="70000">
+  <!-- 2 · En vivo (50–100s) — solución, el bloque más largo -->
+  <section class="slide" data-t="50000">
     <div class="kicker">En vivo · terminal en mano</div>
     <h1>Todo esto corre con <em>un comando</em>.</h1>
     <div class="term-card" style="margin-top:26px">
@@ -137,8 +137,8 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     </div>
   </section>
 
-  <!-- 3 · Cierre (120–150s) -->
-  <section class="slide" data-t="120000">
+  <!-- 3 · Cierre (100–120s) — validación (solución) + cierre (pitch) -->
+  <section class="slide" data-t="100000">
     <div class="kicker">Por qué creérselo</div>
     <h1>Lo validamos contra <em>julio</em>, que ya pasó.</h1>
     <div class="pitch-grid">
@@ -156,18 +156,21 @@ section.slide.on { opacity: 1; pointer-events: auto; }
     <div class="honesty">
       <div class="box real"><b>✓ Real</b>Matching por confianza, forecast con bandas, Pareto, puntos de Boom, backtest contra julio, staff sugerido.</div>
       <div class="box mock"><b>✗ Mock (etiquetado)</b>Canje con Puntos Colombia y el enlace efímero de WhatsApp: no hay API pública que integrar en un hackathon.</div>
+      <div class="box mock"><b>→ Roadmap VIP</b>Preview del lineup sorpresa 24h antes · meet & greet con foto, autógrafo e Instagram story del comediante favorito — perks para el top 20%, sin construir todavía.</div>
     </div>
     <div class="lead" style="margin-top:22px">Freelaught sabe quién viene. <b style="color:var(--primary)">Ahora puede staffear, premiar y vender mejor.</b></div>
   </section>
 </div>
 
-<div id="timer">0:00 / 2:30</div>
+<div id="timer">0:00 / 2:00</div>
 <div id="help">→ siguiente · ← anterior · P pausa · click avanza</div>
 
 <script src="/app.js"></script>
 <script>
-const TOTAL = 150000;
-const T = [0, 35000, 70000, 120000, 150000];
+// 2:00 total, ~70% solución (sistema + en vivo, 20s-100s) / ~30% pitch
+// (hook 0-20s + cierre 100-120s) — ver docs/memoria.md para el porqué del split.
+const TOTAL = 120000;
+const T = [0, 20000, 50000, 100000, 120000];
 const slides = [...document.querySelectorAll("section.slide")];
 const dots = [...document.querySelectorAll(".sdot")];
 const prog = $("#prog");
@@ -185,7 +188,7 @@ function tick() {
   const t = Math.max(0, Math.min(TOTAL, now - last));
   prog.style.width = `${(t / TOTAL) * 100}%`;
   const sec = Math.floor(t / 1000);
-  timerEl.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")} / 2:30`;
+  timerEl.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")} / 2:00`;
   for (let i = T.length - 1; i >= 0; i--) if (t >= T[i]) { if (i !== idx) show(i); break; }
   requestAnimationFrame(tick);
 }

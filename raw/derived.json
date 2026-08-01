@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-01T19:39:06.360Z",
+  "generatedAt": "2026-08-01T19:47:18.175Z",
   "matchedGuestCount": 2719,
   "totalMatchedRevenue": 307303000,
   "vipCount": 544,
@@ -50224,6 +50224,26 @@
       "sharePct": 7.5,
       "note": "7–8%",
       "venueRelevant": false
+    }
+  ],
+  "freeticketRewards": [
+    {
+      "item": "Combo comida",
+      "costPoints": 50,
+      "detail": "Snack + bebida en cualquier show",
+      "icon": "🍟"
+    },
+    {
+      "item": "Souvenir de la noche",
+      "costPoints": 120,
+      "detail": "Poster o merch del show que estás viendo",
+      "icon": "🎁"
+    },
+    {
+      "item": "Upgrade a Preferencial",
+      "costPoints": 200,
+      "detail": "Silla preferencial en tu próximo show",
+      "icon": "🎟️"
     }
   ]
 }

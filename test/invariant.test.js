@@ -116,6 +116,7 @@ test("invariant: re-running the derive step reproduces derived.json", () => {
   assert.deepEqual(fresh.guests.map((g) => g.boom_user_id), derived.guests.map((g) => g.boom_user_id));
   assert.deepEqual(fresh.vipGuests.map((g) => g.boom_user_id), derived.vipGuests.map((g) => g.boom_user_id));
   assert.deepEqual(fresh.puntosColombiaCategories, derived.puntosColombiaCategories);
+  assert.deepEqual(fresh.freeticketRewards, derived.freeticketRewards);
 });
 
 test("invariant: max-2-tickets-per-user-per-event is a soft warning (brief: not necessarily active)", () => {

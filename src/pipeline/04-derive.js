@@ -30,6 +30,16 @@ const PUNTOS_COLOMBIA_CATEGORIES = [
   { category: "Bienestar", partner: "Preferencia declarada", sharePct: 7.5, note: "7–8%", venueRelevant: false },
 ];
 
+// FreeTicket's own venue rewards — not researched market data like the list
+// above, this is a product decision: redeem the same real Boom points
+// directly at the venue (comida, souvenir), independent of any external
+// alliance. Concept only — no real fulfillment/POS integration exists yet.
+const FREETICKET_REWARDS = [
+  { item: "Combo comida", costPoints: 50, detail: "Snack + bebida en cualquier show", icon: "🍟" },
+  { item: "Souvenir de la noche", costPoints: 120, detail: "Poster o merch del show que estás viendo", icon: "🎁" },
+  { item: "Upgrade a Preferencial", costPoints: 200, detail: "Silla preferencial en tu próximo show", icon: "🎟️" },
+];
+
 function computeWeekdayAffinity(weekdayCounts, totalEvents) {
   if (totalEvents < MIN_EVENTS_FOR_AFFINITY) return { weekday: null, share: null, label: "datos insuficientes" };
   let bestDay = null;
@@ -116,6 +126,7 @@ export function deriveProductLayer({ boomProfiles, events, sales, tickets, match
     vipGuests,
     vipByEvent: Object.fromEntries(vipByEvent),
     puntosColombiaCategories: PUNTOS_COLOMBIA_CATEGORIES,
+    freeticketRewards: FREETICKET_REWARDS,
   };
 }
 

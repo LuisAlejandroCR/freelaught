@@ -27,7 +27,7 @@ function loadData() {
   const tickets = JSON.parse(readFileSync(join(RAW_DIR, "ft_tickets.json"), "utf-8"));
   const derived = existsSync(join(RAW_DIR, "derived.json"))
     ? JSON.parse(readFileSync(join(RAW_DIR, "derived.json"), "utf-8"))
-    : { guests: [], vipGuests: [], vipByEvent: {}, puntosColombiaCategories: [], matchedGuestCount: 0, vipRevenueSharePct: 0 };
+    : { guests: [], vipGuests: [], vipByEvent: {}, puntosColombiaCategories: [], freeticketRewards: [], matchedGuestCount: 0, vipRevenueSharePct: 0 };
 
   const augustEvents = events.filter((e) => e.month === "agosto" || e.is_upcoming);
   const ticketsByEvent = new Map();
@@ -90,6 +90,7 @@ export function getVipData() {
     vipRevenueSharePct: data.derived.vipRevenueSharePct,
     vipGuests: data.derived.vipGuests,
     puntosColombiaCategories: data.derived.puntosColombiaCategories,
+    freeticketRewards: data.derived.freeticketRewards,
   };
 }
 
