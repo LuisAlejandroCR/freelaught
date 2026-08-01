@@ -1,0 +1,20 @@
+{
+  "name": "freeticket-hackathon",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "FreeTicket hackathon — Boom/FreeTicket matching, August attendance forecast, and a VIP/loyalty product layer",
+  "scripts": {
+    "run-all": "node src/pipeline/run-all.js",
+    "fetch": "node src/pipeline/01-fetch.js",
+    "match": "node src/pipeline/02-match.js",
+    "forecast": "node src/pipeline/03-forecast.js",
+    "derive": "node src/pipeline/04-derive.js",
+    "backtest": "node src/pipeline/backtest.js",
+    "test": "node --test",
+    "web": "node src/web/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

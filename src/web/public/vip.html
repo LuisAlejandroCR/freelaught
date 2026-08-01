@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreeTicket — VIP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="/"><span class="brand-dot"></span>FreeTicket</a>
+    <div class="nav-links">
+      <a href="/">Shows</a>
+      <a href="/vip" class="active">VIP</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Invitados VIP</h1>
+  <div class="sub">Pareto sobre el cohorte de invitados identificados (Boom × FreeTicket).</div>
+
+  <div class="kpis" id="kpis">
+    <div class="kpi"><div class="kpi-lab">Cargando…</div></div>
+  </div>
+
+  <div class="card svg-card" id="curve-card" style="margin-top:22px">
+    <div class="section-title" style="margin-top:0">Concentración del ingreso</div>
+    <div id="curve" class="skeleton">Cargando curva…</div>
+    <div class="panel-note">Cada punto es un invitado ordenado por ingreso de mayor a menor. Sin datos de ingreso del lado Boom: el cálculo es solo sobre ventas FreeTicket del cohorte matcheado.</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Top VIP</div>
+      <div id="vip-list"><div class="skeleton">Cargando…</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Puntos de invitados</div>
+      <div class="mock-flag">concepto — sin integración real con Puntos Colombia</div>
+      <div class="partner-grid" id="partners"><div class="skeleton">Cargando…</div></div>
+      <div class="panel-note">Los puntos de cada invitado son reales (campo de Boom). El canje por marcas es ilustrativo: no existe API de Puntos Colombia para integrar en 4 horas.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">FreeTicket × Boom — hackathon. Forecast y Pareto generados por el pipeline local.</div>
+</footer>
+
+<script src="/app.js"></script>
+<script>
+async function load() {
+  try {
+    const v = await getJSON("/api/vip");
+
+    $("#kpis").innerHTML = `
+      <div class="kpi"><div class="kpi-num mono">${v.vipRevenueSharePct.toFixed(1)}<span class="kpi-suf">%</span></div><div class="kpi-lab">del ingreso matcheado · top 20%</div></div>
+      <div class="kpi teal"><div class="kpi-num mono">${fmtInt(v.vipGuests.length)}</div><div class="kpi-lab">invitados VIP · de ${fmtInt(v.matchedGuestCount)} identificados</div></div>
+    `;
+
+    const guests = v.vipGuests;
+    const maxRev = guests[0]?.revenue ?? 1;
+    let cum = 0;
+    const cumPcts = guests.map((g) => {
+      cum += g.revenue;
+      return v.totalMatchedRevenue > 0 ? (cum / v.totalMatchedRevenue) * 100 : 0;
+    });
+    const points = guests.map((g, i) => `${(i / Math.max(1, guests.length - 1)) * 100},${100 - cumPcts[i]}`).join(" ");
+    const curveSvg = `
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%;height:260px;display:block">
+        ${[0, 25, 50, 75, 100].map((g) => `<line class="curve-grid" x1="0" y1="${100 - g}" x2="100" y2="${100 - g}"/>`).join("")}
+        <line class="curve-mark" x1="20" y1="0" x2="20" y2="100"/>
+        <polyline class="curve-area" points="0,100 ${points} 100,100"/>
+        <polyline class="curve-line" points="${points}"/>
+        <text x="1" y="12">100%</text>
+        <text x="1" y="37">75%</text>
+        <text x="1" y="62">50%</text>
+        <text x="1" y="87">25%</text>
+        <text x="24" y="12" fill="#1ebbb2">20% de invitados</text>
+      </svg>`;
+
+    const list = guests
+      .slice(0, 60)
+      .map(
+        (g, i) => `
+      <div class="vip-row">
+        <div class="rank">${i + 1}</div>
+        <div class="vip-info">
+          <div class="vip-name">${g.name}</div>
+          <div class="vip-meta">${g.events_attended} shows · afinidad <b>${g.weekday_affinity}</b> · ${g.points} puntos</div>
+        </div>
+        <div class="vip-rev">
+          <div class="n mono">${fmtCOP(g.revenue)}</div>
+          <div class="l">${((g.revenue / maxRev) * 100).toFixed(0)}% del top</div>
+        </div>
+      </div>`
+      )
+      .join("");
+
+    $("#curve").innerHTML = curveSvg;
+    $("#vip-list").innerHTML = list;
+    $("#partners").innerHTML = v.mockRedemptionPartners
+      .map(
+        (p) => `
+      <div class="partner">
+        <div class="brand">${p.brand}</div>
+        <div class="cost mono">${fmtInt(p.cost_points)} pts</div>
+        <div class="reward">${p.reward}</div>
+        <button class="btn ghost cta" disabled>Canjear (mock)</button>
+      </div>`
+      )
+      .join("");
+
+    document.querySelectorAll("#vip-list .vip-row").forEach((row) => {
+      row.addEventListener("click", () => {
+        row.style.background = "rgba(255,255,255,0.04)";
+        setTimeout(() => (row.style.background = ""), 300);
+      });
+    });
+  } catch (err) {
+    renderError($("#kpis"), err);
+    $("#curve").innerHTML = "";
+  }
+}
+load();
+</script>
+</body>
+</html>

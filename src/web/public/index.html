@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreeTicket — Shows de agosto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="/"><span class="brand-dot"></span>FreeTicket</a>
+    <div class="nav-links">
+      <a href="/" class="active">Shows</a>
+      <a href="/vip">VIP</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Agosto en 30 shows</h1>
+  <div class="sub">Asistencia esperada por show, rango de confianza y staffing sugerido.</div>
+
+  <div class="kpis" id="kpis">
+    <div class="kpi"><div class="kpi-lab">Cargando…</div></div>
+  </div>
+
+  <div id="table-area" class="skeleton">Cargando shows…</div>
+</main>
+
+<footer>
+  <div class="container">FreeTicket × Boom — hackathon. Forecast y Pareto generados por el pipeline local.</div>
+</footer>
+
+<script src="/app.js"></script>
+<script>
+async function load() {
+  try {
+    const [events, vip] = await Promise.all([getJSON("/api/events"), getJSON("/api/vip")]);
+
+    const totalExpected = events.reduce((s, e) => s + e.expected_attendance, 0);
+    const biggest = events.length
+      ? events.reduce((a, b) => (b.expected_attendance > a.expected_attendance ? b : a), events[0])
+      : { title: "—", expected_attendance: 0 };
+    const withCap = events.filter((e) => e.capacity);
+    const avgFill = withCap.length
+      ? (withCap.reduce((s, e) => s + Math.min(1, e.expected_attendance / e.capacity), 0) / withCap.length) * 100
+      : 0;
+
+    $("#kpis").innerHTML = `
+      <div class="kpi"><div class="kpi-num mono">${fmtInt(totalExpected)}</div><div class="kpi-lab">asistentes esperados · agosto</div></div>
+      <div class="kpi teal"><div class="kpi-num mono">${fmtInt(biggest.expected_attendance)}</div><div class="kpi-lab">show más grande · ${biggest.title}</div></div>
+      <div class="kpi"><div class="kpi-num mono">${avgFill.toFixed(0)}<span class="kpi-suf">%</span></div><div class="kpi-lab">llenado promedio esperado</div></div>
+      <div class="kpi"><div class="kpi-num mono">${vip.vipRevenueSharePct.toFixed(1)}<span class="kpi-suf">%</span></div><div class="kpi-lab">ingreso en manos del top 20% VIP</div></div>
+    `;
+
+    const table = document.createElement("div");
+    table.className = "table-wrap";
+    table.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="title">Show</th>
+            <th data-sort="venue">Venue</th>
+            <th data-sort="weekday">Día</th>
+            <th data-sort="date">Fecha</th>
+            <th data-sort="expected" data-type="num">Esperado</th>
+            <th data-sort="fill" data-type="num">Llenado</th>
+            <th data-sort="staff" data-type="num">Staff</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>`;
+    $("#table-area").replaceWith(table);
+
+    const tbody = table.querySelector("tbody");
+    for (const e of events) {
+      const tr = document.createElement("tr");
+      const fillPct = e.fill_rate_expected !== null ? e.fill_rate_expected * 100 : null;
+      const residency = e.is_residency ? '<span class="badge teal" style="margin-left:6px">residencia</span>' : "";
+      tr.dataset.title = e.title.toLowerCase();
+      tr.dataset.venue = e.venue.toLowerCase();
+      tr.dataset.weekday = e.weekday;
+      tr.dataset.date = e.starts_at;
+      tr.dataset.expected = e.expected_attendance;
+      tr.dataset.fill = fillPct === null ? -1 : fillPct;
+      tr.dataset.staff = e.suggested_staff;
+      tr.innerHTML = `
+        <td class="title-cell"><a class="rowlink" href="/events/${e.event_id}"><strong>${e.title}</strong><span>${e.artist_name}${residency}</span></a></td>
+        <td>${e.venue} <span style="color:var(--muted);font-size:12px">· ${e.city}</span></td>
+        <td>${e.weekday}</td>
+        <td class="mono">${e.starts_at.slice(0, 10)}</td>
+        <td class="num"><a class="rowlink" href="/events/${e.event_id}"><strong style="font-size:15px">${fmtInt(e.expected_attendance)}</strong><br><span style="color:var(--muted);font-size:11.5px">[${fmtInt(e.p10)}–${fmtInt(e.p90)}]</span></a></td>
+        <td>${fillPct === null ? '<span style="color:var(--muted)">—</span>' : bar(fillPct / 100, fillPct >= 85 ? "orange" : "") + `<span class="mono" style="font-size:12px;margin-left:8px;color:${fillPct >= 85 ? "var(--orange)" : "var(--muted)"}">${fillPct.toFixed(0)}%</span>`}</td>
+        <td class="num"><span class="chip mono">${e.suggested_staff} pax</span></td>`;
+      tbody.appendChild(tr);
+    }
+    makeSortable(table.querySelector("table"));
+  } catch (err) {
+    renderError($("#table-area"), err);
+  }
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreeTicket — Show</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="/"><span class="brand-dot"></span>FreeTicket</a>
+    <div class="nav-links">
+      <a href="/">Shows</a>
+      <a href="/vip">VIP</a>
+    </div>
+  </div>
+</header>
+
+<main class="container" id="main">
+  <div class="skeleton">Cargando show…</div>
+</main>
+
+<footer>
+  <div class="container">FreeTicket × Boom — hackathon. Forecast y Pareto generados por el pipeline local.</div>
+</footer>
+
+<script src="/app.js"></script>
+<script>
+const eventId = location.pathname.split("/").filter(Boolean)[1];
+
+async function load() {
+  try {
+    const e = await getJSON(`/api/events/${eventId}`);
+
+    const fillPct = e.fill_rate_expected !== null ? (e.fill_rate_expected * 100).toFixed(0) : null;
+    const typeEntries = Object.entries(e.ticket_type_mix).sort((a, b) => b[1] - a[1]);
+    const typeTotal = typeEntries.reduce((s, [, c]) => s + c, 0);
+
+    $("#main").innerHTML = `
+      <a href="/" style="color:var(--muted);font-size:13px">← Todos los shows</a>
+
+      <div class="hero" style="margin-top:18px">
+        <div>
+          <h1>${e.title}</h1>
+          <div class="hero-badges">
+            <span class="badge yellow">${e.artist_name}</span>
+            <span class="badge gray">${e.venue} · ${e.city}</span>
+            <span class="badge gray">${e.weekday} · ${fmtDay(e.starts_at)}</span>
+            ${e.is_residency ? '<span class="badge teal">residencia</span>' : ""}
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="big-num mono">${fmtInt(e.expected_attendance)}</div>
+          <div class="range mono">rango [<b>${fmtInt(e.p10)}</b> – <b>${fmtInt(e.p90)}</b>]</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="section-title" style="margin-top:0">Asistencia esperada</div>
+          <div class="stat-line"><span class="k">Tickets vendidos</span><span class="v mono">${fmtInt(e.tickets_sold)}</span></div>
+          <div class="stat-line"><span class="k">Capacidad</span><span class="v mono">${fmtInt(e.capacity)}</span></div>
+          <div class="stat-line"><span class="k">Llenado esperado</span><span class="v mono">${fillPct === null ? "—" : fillPct + "%"}</span></div>
+          <div class="stat-line"><span class="k">Staff sugerido</span><span class="v mono">${e.suggested_staff} personas</span></div>
+          <div class="panel-note">Heurística simple: 1 persona por cada 40 asistentes esperados + 2 de base. No es un modelo de staffing real.</div>
+        </div>
+        <div class="card">
+          <div class="section-title" style="margin-top:0">Mezcla de tickets</div>
+          ${typeEntries.length ? typeEntries.map(([type, count]) => `
+            <div class="mix-row">
+              <span class="mix-lab">${type}</span>
+              ${bar(count / typeTotal, "teal")}
+              <span class="mix-pct mono">${((count / typeTotal) * 100).toFixed(0)}% · ${count}</span>
+            </div>`).join("") : '<div class="empty">Sin tickets registrados</div>'}
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="section-title" style="margin-top:0">Invitados VIP que vienen</div>
+        ${e.vip_guests.length ? e.vip_guests.map((g) => `
+          <div class="vip-row">
+            <div class="vip-info">
+              <div class="vip-name">${g.name}</div>
+              <div class="vip-meta">afinidad: <b>${g.weekday_affinity}</b> · ${g.points} puntos</div>
+            </div>
+            <span class="badge ${g.weekday_affinity.includes("sábado") || g.weekday_affinity.includes("viernes") ? "teal" : "gray"}">${g.weekday_affinity}</span>
+          </div>`).join("") : '<div class="empty">Sin VIP identificados en este show</div>'}
+        <div class="panel-note">Top 20% por ingreso del cohorte de invitados identificados (ver /vip).</div>
+      </div>
+
+      <div class="card share-box">
+        <div class="section-title" style="margin-top:0">Compartir este show</div>
+        <button class="btn" id="share-btn">Copiar enlace WhatsApp</button>
+        <div class="share-meta" id="share-meta"></div>
+      </div>
+    `;
+
+    const st = shareState();
+    const meta = $("#share-meta");
+    if (st.expired) {
+      meta.innerHTML = '<span class="expired">Enlace expirado</span> — regenéralo abriendo esta página de nuevo (demo: expiración en el cliente, sin revocación en servidor).';
+      $("#share-btn").disabled = true;
+    } else {
+      meta.textContent = `El enlace expira en ${fmtLeft(st.left)} (demo: expiración client-side). Corre en localhost — no hay URL pública real en un hackathon.`;
+    }
+    $("#share-btn").addEventListener("click", () => {
+      const text = `🎟️ ${e.title} en ${e.venue} (${fmtDay(e.starts_at)}) — asistencia esperada: ${fmtInt(e.expected_attendance)} personas. ¿Vienes?`;
+      const url = waShareUrl(text);
+      navigator.clipboard.writeText(url).then(() => {
+        $("#share-btn").textContent = "¡Copiado!";
+        setTimeout(() => ($("#share-btn").textContent = "Copiar enlace WhatsApp"), 2000);
+      });
+    });
+  } catch (err) {
+    renderError($("#main"), err);
+  }
+}
+load();
+</script>
+</body>
+</html>
